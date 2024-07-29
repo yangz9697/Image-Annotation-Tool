@@ -47,9 +47,16 @@ const ImageContainer: FC<Props> = ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      <div style={{ position: 'relative' }}>
+      <div
+        style={{
+          position: 'relative',
+          width: scaledW + 'px',
+          height: scaledH + 'px',
+        }}
+      >
         <ImageView imgUrl={imgUrl} width={scaledW} height={scaledH} />
         <AnnotationLayer
           annotatorRef={annotatorRef}

@@ -9,11 +9,18 @@ const ToolBar: FC<{ handleOperation: (type: ToolType) => void }> = ({
     <div>
       <button onClick={() => handleOperation(ToolType.UNDO)}>Undo</button>
       <button onClick={() => handleOperation(ToolType.CLEAR)}>Clear</button>
-      <button onClick={() => handleOperation(ToolType.ROTATE)}>Rotate</button>
-      <button onClick={() => handleOperation(ToolType.DRAW_BOX)}>
-        Place a Random Box
+      <button onClick={() => handleOperation(ToolType.ROTATE_CLOCKWISE)}>
+        Rotate +90
       </button>
-      <button onClick={() => handleOperation(ToolType.LOAD_BOXES)}>
+      <button
+        onClick={() => handleOperation(ToolType.ROTATE_COUNTER_CLOCKWISE)}
+      >
+        Rotate -90
+      </button>
+      {/* <button onClick={() => handleOperation(ToolType.DRAW_FIXED_BOX)}>
+        Draw Fixed Box
+      </button> */}
+      <button onClick={() => handleOperation(ToolType.LOAD_RANDOM_BOXES)}>
         Load Boxes
       </button>
     </div>

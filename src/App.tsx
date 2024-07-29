@@ -22,7 +22,7 @@ function App() {
   return (
     <>
       <div>
-        <h1>Upload and Display Image</h1>
+        <h3>Upload and Click Image to make annotations</h3>
         <input type="file" accept="image/*" onChange={handleImageUpload} />
         {imageSrc && (
           <img

@@ -1,9 +1,10 @@
 export enum ToolType {
-  ROTATE = 'rotate',
+  ROTATE_CLOCKWISE = 'rotate_clockwise',
+  ROTATE_COUNTER_CLOCKWISE = 'rotate_counter_clockwise',
   UNDO = 'undo',
   CLEAR = 'clear',
-  DRAW_BOX = 'draw_box',
-  LOAD_BOXES = 'load_boxes'
+  LOAD_RANDOM_BOXES = 'load_boxes',
+  DRAW_FIXED_BOX = 'draw_fixed_box'
 }
 
 export type Coordinate = [number, number];

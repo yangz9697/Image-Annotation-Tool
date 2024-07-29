@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { generateMockBoundingBoxs } from '../../../../mock';
 
 export interface AnnotatorRef {
   clear: () => void;
@@ -59,18 +58,19 @@ const AnnotationLayer: FC<Props> = ({ annotatorRef, width, height }) => {
   };
   const loadBoxes = () => {
     if (!canvas || !ctx) return;
-    const mockData = generateMockBoundingBoxs(1);
-    mockData.forEach((BOX) => {
-      const [leftTop, rightBottom] = BOX;
-      const width = (rightBottom[0] - leftTop[0]) * canvas.width;
-      const height = (rightBottom[1] - leftTop[1]) * canvas.height;
-      ctx?.strokeRect(
-        leftTop[0] * canvas.width,
-        leftTop[1] * canvas.height,
-        width,
-        height
-      );
-    });
+
+    for (let i = 0; i < 10; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const width = Math.random() * 100;
+      const height = Math.random() * 100;
+
+      ctx.strokeStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
+        Math.random() * 255
+      })`;
+
+      ctx.strokeRect(x, y, width, height);
+    }
     SetSnapshots((prev) => {
       return [...prev, canvas.toDataURL()];
     });

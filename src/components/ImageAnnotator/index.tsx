@@ -16,14 +16,17 @@ const ImageAnnotator: FC<{ imgUrl: string }> = ({ imgUrl }) => {
       case ToolType.CLEAR:
         annotatorRef.current?.clear();
         break;
-      case ToolType.ROTATE:
-        setRotationAngle(rotationAngle + 90);
+      case ToolType.ROTATE_CLOCKWISE:
+        setRotationAngle((prev) => prev + 90);
         break;
-      case ToolType.DRAW_BOX:
-        annotatorRef.current?.drawRandomBox();
+      case ToolType.ROTATE_COUNTER_CLOCKWISE:
+        setRotationAngle((prev) => prev - 90);
         break;
-      case ToolType.LOAD_BOXES:
+      case ToolType.LOAD_RANDOM_BOXES:
         annotatorRef.current?.loadBoxes();
+        break;
+      case ToolType.DRAW_FIXED_BOX:
+        annotatorRef.current?.drawRandomBox();
         break;
       case ToolType.UNDO:
         annotatorRef.current?.undo();
