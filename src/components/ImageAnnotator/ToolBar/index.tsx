@@ -6,7 +6,7 @@ const ToolBar: FC<{ handleOperation: (type: ToolType) => void }> = ({
   handleOperation,
 }) => {
   return (
-    <div>
+    <div style={{ marginTop: '20px' }}>
       <button onClick={() => handleOperation(ToolType.UNDO)}>Undo</button>
       <button onClick={() => handleOperation(ToolType.CLEAR)}>Clear</button>
       <button onClick={() => handleOperation(ToolType.ROTATE_CLOCKWISE)}>

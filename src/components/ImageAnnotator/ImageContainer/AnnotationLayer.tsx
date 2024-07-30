@@ -6,6 +6,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { generateBoundingBoxes } from '../../../mock';
+import { convertToPixelCoordinates } from '../../../utils';
 
 export interface AnnotatorRef {
   clear: () => void;
@@ -56,21 +58,23 @@ const AnnotationLayer: FC<Props> = ({ annotatorRef, width, height }) => {
       return [...prev, canvas.toDataURL()];
     });
   };
+
   const loadBoxes = () => {
     if (!canvas || !ctx) return;
 
-    for (let i = 0; i < 10; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const width = Math.random() * 100;
-      const height = Math.random() * 100;
-
+    const boxes = generateBoundingBoxes(10);
+    boxes.forEach((box) => {
+      const [[x1, y1], [x2, y2]] = convertToPixelCoordinates(
+        box,
+        canvas.width,
+        canvas.height
+      );
       ctx.strokeStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${
         Math.random() * 255
       })`;
+      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    });
 
-      ctx.strokeRect(x, y, width, height);
-    }
     SetSnapshots((prev) => {
       return [...prev, canvas.toDataURL()];
     });

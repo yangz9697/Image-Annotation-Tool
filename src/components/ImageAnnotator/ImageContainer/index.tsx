@@ -35,7 +35,15 @@ const ImageContainer: FC<Props> = ({
           height: height + 'px',
         }}
       >
-        <img src={imgUrl} width={width} height={height} alt="image-display" />
+        <img
+          src={imgUrl}
+          width={width}
+          height={height}
+          alt="image-display"
+          style={{
+            pointerEvents: 'none',
+          }}
+        />
         <AnnotationLayer
           annotatorRef={annotatorRef}
           width={width}
