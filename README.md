@@ -1,166 +1,79 @@
-# Task Analysis
-## Orignal Requirement
-Minimal task
-- Write a component for showing the image
-- You can rotate the file
-- Have 2 buttons outside of the custom component:
-  - Clear-up any drawings
-  - When this button clicked, a rectangle appears over the image
+# Image Annotation Tool
 
-Additional points:
-- Assume that from the backend you get array of bounding box coordinates (left-top and right-bottom points). The width and height of a file are assumed to be 1, coordinates are a proportion of that. Draw those bounding boxes on the image. You are free to choose a format for the coordinates.
-- Possibility of Drawing and highlighting of the image with mouse
-- Add a “Step back” button (aka cmd-z)
+## Table of Contents
 
-## List of Functions
-1. Image Viewing
-- Basic: view and rotate
-2. Image Annotator
-- Basic: Outside Buttons(Clear All, Draw Rectangle)
-- Optioanl: Drawing and highlighting of the image with mouse
-- Optional: 'Step Back'
-- Optional: Bounding Boxs from mock data.
+- [Image Annotation Tool](#image-annotation-tool)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Scope](#scope)
+  - [Technology Evaluation](#technology-evaluation)
+    - [SVG or Canvas](#svg-or-canvas)
+- [Component Design](#component-design)
+  - [Visual Struture](#visual-struture)
+  - [Component Structure](#component-structure)
+- [Unit Testing Plan](#unit-testing-plan)
 
-# Tech Research
-## Related technologies
-1. Image Types: Bitmap(JPEG、PNG、GIF), Vector Graphics(svg, pdf)
-2. Show Images: 
-   - ~~`<img>`~~
-   - ~~`<div> + {background-image: url}`~~
-   - `<svg>`: Allows for complex editing.
-   - `load image in <canvas>`: Allows for complex editing.
-3. Rotate Images: `{transform: rotate(45)}` 
-4. Draw on Images(with mouse):
+## Installation
+Node.js (v18.x or higher)
+```bash
+npm install
+npm run dev
+```
+## Scope
+The scope of this project includes:
+1. Image viewing and rotating(+,-90deg);
+2. Image Annotation
+- Clear
+- Undo
+- Drawing and highlighting of the image with mouse
+- Load Bounding Boxs from mock data.
+
+## Technology Evaluation
+1. Show Images: Decided to go with `<img>` to isolate annotation from the actual image.
+   - `<img>`
+   - `<div> + {background-image: url}`
+   - load image in `<canvas>` or `<svg>`
+2. Rotation : `{transform: rotate(45)}` 
+3. Draw on Images(with mouse):
    - `<canvas>`
    - `<svg>`
-5. Clear Drawing、Back: `stack` structure of strokes or boxs.
-## SVG or Canvas
-### SVG DEMO
-```
-const svg = document.getElementById('mySVG');
-let drawing = false;
-let paths = []; // array to store paths
-let currentPath = [];
-
-svg.addEventListener('mousedown', (e) => {
-  drawing = true;
-  const x = e.offsetX;
-  const y = e.offsetY;
-  currentPath = [`M${x},${y}`]; // starting point
-});
-
-svg.addEventListener('mousemove', (e) => {
-  if (drawing) {
-    const x = e.offsetX;
-    const y = e.offsetY;
-    currentPath.push(`L${x},${y}`); // path
-    drawPath(currentPath.join(' '));
-  }
-});
-
-svg.addEventListener('mouseup', () => {
-  drawing = false;
-  paths.push(currentPath.join(' ')); // save path
-  currentPath = [];
-});
-
-function drawPath(d) {
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', d);
-  path.setAttribute('class', 'annotation');
-  svg.appendChild(path);
-}
-
-function undo() {
-  if (paths.length > 0) {
-    svg.removeChild(svg.lastChild); // remove last path
-    paths.pop(); // remove last operation
-  }
-}
-
-function clearSVG() {
-  while (svg.firstChild) {
-    svg.removeChild(svg.firstChild); // clear paths
-  }
-  paths = []; // clear operations
-}
-```
-### Canvas Demo
-```
-const canvas = document.getElementById('myCanvas');
-const ctx = canvas.getContext('2d');
-let drawing = false;
-let operations = []; // operation stack
-
-canvas.addEventListener('mousedown', (e) => {
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
-});
-
-canvas.addEventListener('mousemove', (e) => {
-  if (drawing) {
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.stroke();
-  }
-});
-
-canvas.addEventListener('mouseup', () => {
-  drawing = false;
-  operations.push(canvas.toDataURL());
-});
-
-function undo() {
-  if (operations.length > 0) {
-    const lastOperation = operations.pop();
-    const img = new Image();
-    img.src = lastOperation;
-    img.onload = () => ctx.drawImage(img, 0, 0);
-  }
-}
-
-function clearCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  operations = [];
-}
-```
-### Conclusion
-#### Assumption
-Not necessary to precisely control each stroke or shape.
-#### Decision
-Base on assumptions above, **Canvas** would be a better choice because it seems to performs better when dealing with frequent repainting. But in order to provide flexibility to move to SVG-based solutoin and further compare the performance, the implementation of operations like drawing, undo and clear should have an **abstraction layer** that allows us to use either technology interchangeably without major code changes.
-## Canvas Framework
-- [ ] Potential increasement in development efficiency.
+4. Clear Drawing、Undo: use an array to store operations.
+### SVG or Canvas
+1. image types: Bitmap(JPEG、PNG、GIF), Vector Graphics(svg, pdf)
+2. `svg`: XML structure, `svg.appendChild(path); svg.removeChild(svg.lastChild)`;
+   - allows for individual control on each path.
+3. `canvas`: `ctx.beginPath();ctx.moveTo();ctx.lineTo();ctx.stroke();ctx.clearRect`
+   1. performs better when dealing with frequent repainting
+4. Choice: `canvas`, no need for individual control. But should provide flexibility to use either technology for further performance comparison.
+5. Framework based on `canvas` : no framework is used yet but could have potential increasement in development efficiency.
 
 # Component Design
 ## Visual Struture
+ImageContainer: limit viewing area to a square to make space for rotation.
 ![Component](/src/assets/image.png "Component")
-Container: limit max viewing area.
-Canvas Container: resize if canvas was rotated.
-Canvas: embed image, show paths.
-Operation Panel: Undo, Clear, Rotate, Add Shape(Rect), Load Shapes
-## Components
+
+## Component Structure
 ```
 <ImageAnnotator imgUrl={imgUrl}>
   const rotationAngle;
   const annotatorRef;
-  const MAX_WIDTH, MAX_HEIGHT;
+  const MAX_WIDTH_HEIGHT;
+  const scaledW, scaledH;
 
+  function scaleImage; // onMounted
   function handleOperation; // use annotatorRef to draw on canvas.
 
   <ImageContainer 
     rotationAngle={rotationAngle} 
     annotatorRef={annotatorRef} 
     imgUrl={imgUrl}
-    maxWidth={MAX_WIDTH}
-    maxHeight={MAX_HEIGHT}
+    width={scaledW}
+    height={scaledH}
   >
-    const scaledW, scaledH;
-    function scaleImage; // onMounted
-
-    <ImageView imgUrl={imgUrl} width={scaledW} height={scaledH}/>
-    <AnnotationLayer annotatorRef={annotatorRef} width={scaledW} height={scaledH}>
-      function clearCanvas;
+    <img src={imgUrl} width={width} height={height} alt="image-display" />
+    <AnnotationLayer annotatorRef={annotatorRef} width={width} height={height}>
+      const canvas;
+      function clear;
       function undo;
       function drawBox; 
       function loadBoxes;
@@ -172,10 +85,6 @@ Operation Panel: Undo, Clear, Rotate, Add Shape(Rect), Load Shapes
 
 # Unit Testing Plan
 1. Rendering: Check the rendering of each component including image and canvas.
-2. Component Communication:
-   1. between Toolbar and Annotator.
-3. Exceptions: 
-   1. loading error or empty image data.
-4. Functionality
-   1. image scaling.
-   2. undo, rotate.
+2. Component Communication: for example, between Toolbar and Annotator.
+3. Exceptions: loading error or empty image data.
+4. Functionality: image scaling, undo, rotate.
