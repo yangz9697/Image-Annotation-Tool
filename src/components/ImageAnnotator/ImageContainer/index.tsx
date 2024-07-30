@@ -1,48 +1,26 @@
-import { FC, Ref, useEffect, useState } from 'react';
+import { FC, Ref } from 'react';
 import AnnotationLayer, { AnnotatorRef } from './AnnotationLayer';
-import ImageView from './ImageView';
+import { MAX_WIDTH_HEIGHT } from '../../../constants';
 interface Props {
   rotationAngle: number;
   imgUrl: string;
   annotatorRef: Ref<AnnotatorRef>;
-  maxWidth: number;
-  maxHeight: number;
+  width: number;
+  height: number;
 }
 const ImageContainer: FC<Props> = ({
   imgUrl,
   annotatorRef,
   rotationAngle,
-  maxWidth,
-  maxHeight,
+  width,
+  height,
 }) => {
-  const [scaledW, setScaleW] = useState(0);
-  const [scaledH, setScaleH] = useState(0);
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = imgUrl;
-    img.onload = () => {
-      let scale = 1;
-      if (img.width >= maxWidth || img.height >= maxHeight) {
-        if (img.height < maxHeight) scale = maxWidth / img.width;
-        else if (img.width < maxWidth) scale = maxHeight / img.height;
-        else {
-          scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-        }
-      } else {
-        scale = Math.min(maxWidth / img.width, maxHeight / img.height);
-      }
-      setScaleW(img.width * scale);
-      setScaleH(img.height * scale);
-    };
-  }, [imgUrl, maxWidth, maxHeight]);
-
   return (
     <div
       style={{
         transform: `rotate(${rotationAngle}deg)`,
         transformOrigin: 'center center',
-        height: `${maxHeight}px`,
+        height: `${MAX_WIDTH_HEIGHT}px`,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -53,15 +31,15 @@ const ImageContainer: FC<Props> = ({
       <div
         style={{
           position: 'relative',
-          width: scaledW + 'px',
-          height: scaledH + 'px',
+          width: width + 'px',
+          height: height + 'px',
         }}
       >
-        <ImageView imgUrl={imgUrl} width={scaledW} height={scaledH} />
+        <img src={imgUrl} width={width} height={height} alt="image-display" />
         <AnnotationLayer
           annotatorRef={annotatorRef}
-          width={scaledW}
-          height={scaledH}
+          width={width}
+          height={height}
         />
       </div>
     </div>

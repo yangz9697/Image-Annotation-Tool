@@ -10,7 +10,7 @@ import {
 export interface AnnotatorRef {
   clear: () => void;
   undo: () => void;
-  drawRandomBox: () => void;
+  drawFixedBox: () => void;
   loadBoxes: () => void;
 }
 interface Props {
@@ -49,7 +49,7 @@ const AnnotationLayer: FC<Props> = ({ annotatorRef, width, height }) => {
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
     }
   };
-  const drawRandomBox = () => {
+  const drawFixedBox = () => {
     if (!canvas || !ctx) return;
     ctx.strokeRect(250, 50, 100, 150);
     SetSnapshots((prev) => {
@@ -103,18 +103,23 @@ const AnnotationLayer: FC<Props> = ({ annotatorRef, width, height }) => {
     if (canvasRef.current) {
       setCanvas(canvasRef.current);
       setContext(canvasRef.current.getContext('2d'));
+    } else {
+      setCanvas(null);
+      setContext(null);
     }
   }, [canvasRef]);
 
   useImperativeHandle(annotatorRef, () => ({
     clear,
     undo,
-    drawRandomBox,
+    drawFixedBox,
     loadBoxes,
   }));
+
   return (
     <canvas
       ref={canvasRef}
+      data-testid="canvas-test"
       width={width}
       height={height}
       style={{ position: 'absolute', left: 0, top: 0 }}

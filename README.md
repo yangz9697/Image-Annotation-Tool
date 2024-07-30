@@ -169,3 +169,13 @@ Operation Panel: Undo, Clear, Rotate, Add Shape(Rect), Load Shapes
   <ToolBar handleOperation={handleOperation} />  // Tools like Rotate, Undo, Clear etc.
 </ImageAnnotator>
 ```
+
+# Unit Testing Plan
+1. Rendering: Check the rendering of each component including image and canvas.
+2. Component Communication:
+   1. between Toolbar and Annotator.
+3. Exceptions: 
+   1. loading error or empty image data.
+4. Functionality
+   1. image scaling.
+   2. undo, rotate.

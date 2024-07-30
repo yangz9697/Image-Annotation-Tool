@@ -6,5 +6,5 @@ export default defineConfig({
   plugins: [react()],
   build: {
     sourcemap: true, // 启用 source maps
-  },
+  }
 })
